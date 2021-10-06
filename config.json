@@ -1,0 +1,74 @@
+{
+    "default_foreground": "#ffffff",
+    "background":"/home/marck/Pictures/bg3.jpg",
+    "top_bar": {
+        "size": 24,
+        "opacity": 0.8,
+        "clock": {
+            "foreground": "#aaf0aa",
+            "background": null,
+            "padding": 10,
+            "format": "%H:%M:%S"
+        },
+        "volume": {
+            "foreground": "#fff000",
+            "background": null,
+            "emoji": false,
+            "padding": 10
+        },
+        "groupBox": {
+            "foreground": "#ffffff",
+            "background": "#000000",
+            "active": "#444440",
+            "borderwidth": 0,
+            "inactive": "#ffffff",
+            "highlight_method": "line",
+            "highlight_color": "#fff000",
+            "hide_unused": "true",
+            "padding": 10
+        },
+        "quickExit": {
+            "foreground": "#fa402e",
+            "background": null,
+            "padding": 0
+        },
+        "windowName": {
+            "foreground": "#ffffff",
+            "background": null,
+            "empty_group_string": "MK DESKTOP",
+            "for_current_screen": true,
+            "format": "{name}",
+            "padding": 0
+        }
+    },
+    "prompt": "mk \u2e16 ",
+    "bottom_bar": {
+        "size": 24,
+        "opacity": 0.4,
+        "battery": {
+            "foreground": "#fff000",
+            "background": null,
+            "format": "BATTERY: {percent:2.0%}",
+            "charge_char": "\u22bc",
+            "discharge_char": "\u22bb",
+            "empty_char": "\u03a6",
+            "full_char": "\ue0a2",
+            "low_foreground": "#ff4422",
+            "padding": 0
+        },
+        "memory": {
+            "foreground": "#fff000",
+            "background": null,
+            "measure_mem": "G",
+            "padding": 10
+        },
+        "cpu": {
+            "foreground": "#fff000",
+            "background": null,
+            "padding": 10
+        }
+    },
+    "border_focus": "#fff000", 
+    "font": "Fira Mono for Powerline",
+    "fontSize": 10
+}
