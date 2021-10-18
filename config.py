@@ -42,16 +42,34 @@ text = "\n".join(text)
 CONFIG = json.loads(text)
 file.close()
 
+SEP = "\ue0ba"
 mod = "mod4"  # windows
 terminal = guess_terminal()
 
 groups = [
     Group("term"),  # ,matches=Match(title=['Alacritty'])
-    Group("code", matches=Match(title=['Visual Studio Code', 'Idea', 'Intellij', 'Pycharm'])),  # 
-    Group("web", matches=Match(title=["Mozilla Firefox", "Chrome", "Chromium"]))
+    Group("code", spawn="code", matches=Match(
+        title=['Visual Studio Code', 'Idea', 'Intellij', 'Pycharm'])),  #
+    Group("music", spawn="spotify", matches=Match(
+        title=['Spotify', 'spotify', 'Youtube'])),  #
+    Group("web", matches=Match(
+        title=["Mozilla Firefox", "Chrome", "Chromium"]))
 ]
 
 vol_wid = widget.Volume(**CONFIG["top_bar"]["volume"])
+sep = widget.TextBox(SEP,
+                     padding=0,
+                     fontsize=20,
+                     foreground=CONFIG["top_bar"]["windowName"]['background'])
+
+
+def showPrompt():
+    sep = widget.TextBox(SEP,
+                         padding=0,
+                         fontsize=20,
+                         background=CONFIG["top_bar"]["prompt"]['background'],
+                         foreground=CONFIG["top_bar"]["windowName"]['background'])
+
 
 keys = [
     # Switch between windows
@@ -59,7 +77,7 @@ keys = [
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
-    Key([mod], "space", lazy.layout.next(),
+    Key([mod], "Tab", lazy.layout.next(),
         desc="Move window focus to other window"),
 
     # Move windows between left/right columns or move up/down in current stack.
@@ -92,7 +110,8 @@ keys = [
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
 
     # Toggle between different layouts as defined below
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod, "shift"], "Tab", lazy.next_layout(),
+        desc="Toggle between layouts"),
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
 
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
@@ -102,20 +121,35 @@ keys = [
 
     # Sound
     Key([], "XF86AudioMute", lazy.spawn('amixer -D pulse set Master 1+ toggle')),
-    Key([], "XF86AudioLowerVolume", lazy.spawn('amixer -c 0 -q sset Master 2%- ')),
-    Key([], "XF86AudioRaiseVolume", lazy.spawn('amixer -c 0 -q sset Master 2%+ ')),
+    Key([], "XF86AudioLowerVolume", lazy.spawn(
+        'amixer -D pulse set Master 2%- ')),
+    Key([], "XF86AudioRaiseVolume", lazy.spawn(
+        'amixer -D pulse set Master 2%+ ')),
 
     #     APPS
-    Key([mod, "control"], "p", lazy.spawn('pycharm'), desc='Open pycharm'),
-    Key([mod, "control"], "c", lazy.spawn('code'), desc='Open VS Code'),
-    Key([mod, "control"], "a", lazy.spawn('idea'), desc='Open VS Code'),
+
+
+    Key([mod], "space", lazy.widget["keyboardlayout"].next_keyboard(),
+        desc="Next keyboard layout."),
+    Key([mod], "f", lazy.window.toggle_floating())
 ]
+
+keys.extend([
+    KeyChord([mod], "p", [
+        Key([], "p", lazy.spawn('pycharm'), desc='Open pycharm'),
+        Key([], "c", lazy.spawn('code'), desc='Open VS Code'),
+        Key([], "i", lazy.spawn('idea'), desc='Open Idea'),
+        Key([], "s", lazy.spawn('spotify'), desc='Open Spotify'),
+    ])
+
+])
 
 keys.extend([
     KeyChord([mod], "s", [
         Key([], "w", lazy.group["web"].toscreen()),
         Key([], "c", lazy.group["code"].toscreen()),
         Key([], "t", lazy.group["term"].toscreen()),
+        Key([], "m", lazy.group["music"].toscreen()),
     ])
 
 ])
@@ -125,15 +159,19 @@ layouts = [
         border_focus=CONFIG["border_focus"], border_width=1, margin=5),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
-    layout.Stack(num_stacks=2, border_focus=CONFIG["border_focus"], border_width=1, margin=5),
-    layout.Matrix(border_focus=CONFIG["border_focus"], margin=5, border_width=1),
-    layout.MonadTall(border_focus=CONFIG["border_focus"], margin=5, border_width=1),
+    layout.Stack(
+        num_stacks=2, border_focus=CONFIG["border_focus"], border_width=1, margin=5),
+    layout.Matrix(
+        border_focus=CONFIG["border_focus"], margin=5, border_width=1),
+    layout.MonadTall(
+        border_focus=CONFIG["border_focus"], margin=5, border_width=1),
     # layout.MonadWide(border_focus=CONFIG["border_focus"], margin=5, border_width=1),
-    layout.RatioTile(border_focus=CONFIG["border_focus"], margin=5, border_width=1),
-    layout.Tile(border_focus=CONFIG["border_focus"], margin=5, border_width=1),
-    layout.TreeTab(border_focus=CONFIG["border_focus"], margin=5, border_width=1, background=CONFIG["border_focus"]),
+    layout.RatioTile(
+        border_focus=CONFIG["border_focus"], margin=5, border_width=1),
+    #layout.Tile(border_focus=CONFIG["border_focus"], margin=5, border_width=1),
+    #layout.TreeTab(border_focus=CONFIG["border_focus"], margin=5, border_width=1, background=CONFIG["border_focus"]),
     # layout.VerticalTile(),
-    layout.Zoomy(border_focus=CONFIG["border_focus"], margin=5, border_width=1),
+    #layout.Zoomy(border_focus=CONFIG["border_focus"], margin=5, border_width=1),
 ]
 
 widget_defaults = dict(
@@ -148,66 +186,245 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.CurrentLayout(),
+                widget.CurrentLayout(background=CONFIG["top_bar"]["windowName"]['background'],
+                                     padding=10,
+                                     foreground="#000000"),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["windowName"]['background'],
+                               foreground=CONFIG["top_bar"]["groupBox"]['background']),
                 widget.Spacer(length=20),
                 widget.GroupBox(**CONFIG["top_bar"]["groupBox"]),
-                widget.Prompt(name="prompt", prompt=CONFIG["prompt"]),
-                widget.Spacer(length=40),
+                widget.Prompt(**CONFIG["top_bar"]["prompt"]),
+                widget.Spacer(length=20),
+                sep,
                 widget.WindowName(**CONFIG["top_bar"]["windowName"]),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["windowName"]['background'],
+                               foreground=CONFIG["top_bar"]["volume"]['background']),
                 vol_wid,
-                widget.Spacer(length=20),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["volume"]['background'],
+                               foreground=CONFIG["top_bar"]["clock"]['background']),
                 widget.Clock(**CONFIG["top_bar"]["clock"]),
-                widget.Spacer(length=20),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["clock"]['background'],
+                               foreground=CONFIG["top_bar"]["quickExit"]['background']),
                 widget.QuickExit(**CONFIG["top_bar"]["quickExit"]),
             ],
             CONFIG["top_bar"]["size"],
             opacity=CONFIG["top_bar"]["opacity"]
         ),
         bottom=bar.Bar([
-            widget.Spacer(length=20),
+            widget.KeyboardLayout(**CONFIG["bottom_bar"]["keyboard"]),
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["keyboard"]['background'],
+                           foreground=CONFIG['bottom_bar']['battery']['background']),
             widget.Battery(**CONFIG["bottom_bar"]["battery"]),
             widget.Spacer(length=40),
             widget.Memory(**CONFIG["bottom_bar"]["memory"]),
             widget.Spacer(length=40),
-            widget.CPU(**CONFIG["bottom_bar"]["cpu"])
+
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["memory"]['background'],
+                           foreground=CONFIG['bottom_bar']['tasklist']['background']),
+            widget.TaskList(**CONFIG['bottom_bar']['tasklist']),
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["tasklist"]['background'],
+                           foreground="#000000"),
+            widget.Moc(),
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background="#000000",
+                           foreground=CONFIG['bottom_bar']['cpu']['background']),
+            widget.CPU(**CONFIG["bottom_bar"]["cpu"]),
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["cpu"]['background'],
+                           foreground="#000000"),
+            widget.TextBox("\uf011",
+                           padding=10,
+                           fontsize=13,
+                           margin=10,
+                           mouse_callback={"Button1": lazy.spawn('poweroff')},
+                           foreground=CONFIG["bottom_bar"]["tasklist"]['background'],
+                           background="#000000"),
             # widget.LaunchBar(progs=[("firefox", "firefox", 'Mozilla Firefox'),
             #                                              ('code', 'code', 'Visual Studio Code')])
         ],
             CONFIG["bottom_bar"]["size"],
             opacity=CONFIG["bottom_bar"]["opacity"]
-        )
+        ),
+        wallpaper=CONFIG['background'],
+        wallpaper_mode='fill'
     ),
     Screen(
         top=bar.Bar(
             [
-                widget.CurrentLayout(),
+                widget.CurrentLayout(background=CONFIG["top_bar"]["windowName"]['background'],
+                                     padding=10,
+                                     foreground="#000000"),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["windowName"]['background'],
+                               foreground=CONFIG["top_bar"]["groupBox"]['background']),
                 widget.Spacer(length=20),
                 widget.GroupBox(**CONFIG["top_bar"]["groupBox"]),
-                widget.Prompt(name="prompt", prompt=CONFIG["prompt"]),
-                widget.Spacer(length=40),
+                widget.Spacer(length=20),
+                sep,
                 widget.WindowName(**CONFIG["top_bar"]["windowName"]),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["windowName"]['background'],
+                               foreground=CONFIG["top_bar"]["volume"]['background']),
                 vol_wid,
-                widget.Spacer(length=20),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["volume"]['background'],
+                               foreground=CONFIG["top_bar"]["clock"]['background']),
                 widget.Clock(**CONFIG["top_bar"]["clock"]),
-                widget.Spacer(length=20),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["clock"]['background'],
+                               foreground=CONFIG["top_bar"]["quickExit"]['background']),
                 widget.QuickExit(**CONFIG["top_bar"]["quickExit"]),
             ],
             CONFIG["top_bar"]["size"],
             opacity=CONFIG["top_bar"]["opacity"]
         ),
         bottom=bar.Bar([
-            widget.Spacer(length=20),
+            widget.KeyboardLayout(**CONFIG["bottom_bar"]["keyboard"]),
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["keyboard"]['background'],
+                           foreground=CONFIG['bottom_bar']['battery']['background']),
             widget.Battery(**CONFIG["bottom_bar"]["battery"]),
             widget.Spacer(length=40),
             widget.Memory(**CONFIG["bottom_bar"]["memory"]),
             widget.Spacer(length=40),
-            widget.CPU(**CONFIG["bottom_bar"]["cpu"])
+
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["memory"]['background'],
+                           foreground=CONFIG['bottom_bar']['tasklist']['background']),
+            widget.TaskList(**CONFIG['bottom_bar']['tasklist']),
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["tasklist"]['background'],
+                           foreground=CONFIG['bottom_bar']['cpu']['background']),
+            widget.CPU(**CONFIG["bottom_bar"]["cpu"]),
             # widget.LaunchBar(progs=[("firefox", "firefox", 'Mozilla Firefox'),
             #                                              ('code', 'code', 'Visual Studio Code')])
         ],
             CONFIG["bottom_bar"]["size"],
             opacity=CONFIG["bottom_bar"]["opacity"]
-        )
+        ),
+        wallpaper=CONFIG['background'],
+        wallpaper_mode='fill'
+    ),
+    Screen(
+        top=bar.Bar(
+            [
+                widget.CurrentLayout(background=CONFIG["top_bar"]["windowName"]['background'],
+                                     padding=10,
+                                     foreground="#000000"),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["windowName"]['background'],
+                               foreground=CONFIG["top_bar"]["groupBox"]['background']),
+                widget.Spacer(length=20),
+                widget.GroupBox(**CONFIG["top_bar"]["groupBox"]),
+                widget.Spacer(length=20),
+                sep,
+                widget.WindowName(**CONFIG["top_bar"]["windowName"]),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["windowName"]['background'],
+                               foreground=CONFIG["top_bar"]["volume"]['background']),
+                vol_wid,
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["volume"]['background'],
+                               foreground=CONFIG["top_bar"]["clock"]['background']),
+                widget.Clock(**CONFIG["top_bar"]["clock"]),
+                widget.TextBox(SEP,
+                               padding=0,
+                               fontsize=20,
+                               background=CONFIG["top_bar"]["clock"]['background'],
+                               foreground=CONFIG["top_bar"]["quickExit"]['background']),
+                widget.QuickExit(**CONFIG["top_bar"]["quickExit"]),
+            ],
+            CONFIG["top_bar"]["size"],
+            opacity=CONFIG["top_bar"]["opacity"]
+        ),
+        bottom=bar.Bar([
+            widget.KeyboardLayout(**CONFIG["bottom_bar"]["keyboard"]),
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["keyboard"]['background'],
+                           foreground=CONFIG['bottom_bar']['battery']['background']),
+            widget.Battery(**CONFIG["bottom_bar"]["battery"]),
+            widget.Spacer(length=40),
+            widget.Memory(**CONFIG["bottom_bar"]["memory"]),
+            widget.Spacer(length=40),
+
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["memory"]['background'],
+                           foreground=CONFIG['bottom_bar']['tasklist']['background']),
+            widget.TaskList(**CONFIG['bottom_bar']['tasklist']),
+            widget.TextBox(SEP,
+                           padding=0,
+                           fontsize=25,
+                           margin=0,
+                           background=CONFIG["bottom_bar"]["tasklist"]['background'],
+                           foreground=CONFIG['bottom_bar']['cpu']['background']),
+            widget.CPU(**CONFIG["bottom_bar"]["cpu"]),
+            # widget.LaunchBar(progs=[("firefox", "firefox", 'Mozilla Firefox'),
+            #                                              ('code', 'code', 'Visual Studio Code')])
+        ],
+            CONFIG["bottom_bar"]["size"],
+            opacity=CONFIG["bottom_bar"]["opacity"]
+        ),
+        wallpaper=CONFIG['background'],
+        wallpaper_mode='fill'
     )
 ]
 
@@ -254,7 +471,7 @@ auto_minimize = True
 wmname = "LG3D"
 
 
-@hook.subscribe.startup_once
+@hook.subscribe.startup
 def autostart():
     home = os.path.expanduser('~')
     os.system("feh --bg-fill {}".format(CONFIG["background"]))

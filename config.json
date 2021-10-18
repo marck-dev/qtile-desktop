@@ -1,74 +1,131 @@
 {
     "default_foreground": "#ffffff",
-    "background":"/home/marck/Pictures/bg3.jpg",
+    "background": "/home/marck/Pictures/bg2.jpg",
     "top_bar": {
         "size": 24,
-        "opacity": 0.8,
+        "opacity": 1,
         "clock": {
-            "foreground": "#aaf0aa",
-            "background": null,
+            "foreground": "#000000",
+            "background": "#BA68C8",
             "padding": 10,
-            "format": "%H:%M:%S"
+            "fontsize": 13,
+            "format": "\uf017 %H:%M:%S"
         },
         "volume": {
-            "foreground": "#fff000",
-            "background": null,
+            "foreground": "#000000",
+            "background": "#009688",
             "emoji": false,
-            "padding": 10
+            "padding": 10,
+            "fmt": "\uf028 {:>4}"
         },
         "groupBox": {
-            "foreground": "#ffffff",
+            "foreground": "#fff000",
             "background": "#000000",
-            "active": "#444440",
+            "active": "#fff000",
             "borderwidth": 0,
-            "inactive": "#ffffff",
-            "highlight_method": "line",
-            "highlight_color": "#fff000",
+            "inactive": "#BDBDBD",
+            "highlight_method": "block",
+            "this_current_screen_border": "#FBC02D",
+            "block_highlight_text_color": "#000000",
+            "other_current_screen_border": "#FFFDE7",
+            "other_screen_border": "#FFF59D",
+            "this_screen_border": "#fff000",
+            "urgent_border": "#F44336",
             "hide_unused": "true",
-            "padding": 10
+            "padding": 10,
+            "margin_x": 2,
+            "fmt": "\uf197{:<4}"
+        },
+        "prompt": {
+            "prompt": "mk \ue0b0",
+            "cursor_color": "#ef32e8",
+            "visual_bell_color": "#32a852",
+            "foreground": "#000000",
+            "background": "#F44336"
         },
         "quickExit": {
-            "foreground": "#fa402e",
-            "background": null,
-            "padding": 0
+            "foreground": "#000000",
+            "background": "#F44336",
+            "padding": 12,
+            "fontsize": 20,
+            "default_text": "\uf705",
+            "fmt": "{:>2}",
+            "countdown_format": "{}"
         },
         "windowName": {
-            "foreground": "#ffffff",
-            "background": null,
+            "foreground": "#000000",
+            "background": "#FFEB3B",
             "empty_group_string": "MK DESKTOP",
             "for_current_screen": true,
             "format": "{name}",
-            "padding": 0
+            "padding": 0,
+            "fmt": "\t \ufb13 {}"
         }
     },
-    "prompt": "mk \u2e16 ",
     "bottom_bar": {
         "size": 24,
-        "opacity": 0.4,
+        "opacity": 1,
         "battery": {
-            "foreground": "#fff000",
-            "background": null,
-            "format": "BATTERY: {percent:2.0%}",
-            "charge_char": "\u22bc",
-            "discharge_char": "\u22bb",
-            "empty_char": "\u03a6",
-            "full_char": "\ue0a2",
+            "foreground": "#FFEB3B",
+            "background": "#000000",
+            "format": "{char}  {percent:>4.0%}",
+            "charge_char": "\uf1e6",
+            "discharge_char": "\uf242",
+            "empty_char": "\uf12a",
+            "fontsize": 12,
+            "full_char": "\uf240",
             "low_foreground": "#ff4422",
-            "padding": 0
+            "padding": 10
         },
         "memory": {
-            "foreground": "#fff000",
-            "background": null,
+            "foreground": "#FFEB3B",
+            "background": "#000000",
             "measure_mem": "G",
-            "padding": 10
+            "padding": 10,
+            "fontsize": 12,
+            "fmt": "\uf85a {}"
         },
         "cpu": {
-            "foreground": "#fff000",
-            "background": null,
-            "padding": 10
+            "foreground": "#000000",
+            "background": "#BA68C8",
+            "padding": 10,
+            "fontsize": 12,
+            "max_chars": 30,
+            "format": "\uf9c4 {freq_current: >3}GHz \uf295{load_percent: >5}"
+        },
+        "tasklist": {
+            "background": "#FFEB3B",
+            "foreground": "#000000",
+            "spacing": 10,
+            "max_title_width": 100,
+            "highlight_method": "block",
+            "border": "#ffffff",
+            "padding": 6,
+            "margin": 0,
+            "rounded": false,
+            "urgent_alert_method": "border",
+            "urgent_border": "#ff4422",
+            "title_width_method": "uniform",
+            "icon_size": 10,
+            "margin_x": 20
+        },
+        "keyboard": {
+            "configured_keyboards": [
+                "gb",
+                "es"
+            ],
+            "display_map": {
+                "es": "Write",
+                "gb": "Programming"
+            },
+            "fmt": "\uf11c  {:<11}",
+            "fontsize": 12,
+            "background": "#ff4422",
+            "foreground": "#ffffff",
+            "padding": 20
         }
     },
-    "border_focus": "#fff000", 
-    "font": "Fira Mono for Powerline",
+    "border_focus": "#FFEB3B",
+    "font": "FiraCode Nerd Font",
     "fontSize": 10
 }
