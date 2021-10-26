@@ -4,10 +4,10 @@ from .Loader import CONFIG
 from libqtile import hook
 
 
-@hook.subscribe.startup
+@hook.subscribe.startup_once
 def autostart():
     home = os.path.expanduser('~')
-   # os.system("feh --bg-fill {}".format(CONFIG["background"]))
+    os.system("feh --bg-fill {}".format(CONFIG["background"]))
     subprocess.call(home + '/.config/qtile/autostart.sh')
 
 
